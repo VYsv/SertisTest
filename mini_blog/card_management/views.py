@@ -21,7 +21,7 @@ def postRequest(request):
     return response.Response(data='Create card successful', status=status.HTTP_200_OK)
 
 @api_view(['PUT'])
-def updateRequest(request):
+def updateRequest(request, blog_id):
     requestContent = json.loads(request.body)
     try:
         cardName = requestContent['name']
@@ -31,7 +31,7 @@ def updateRequest(request):
         cardAuthor = requestContent['author']
     except KeyError:
         return response.Response({'error': 'Invalid JSON input'}, status=status.HTTP_400_BAD_REQUEST)
-    updateCard = Card.objects.get(name=cardName)
+    updateCard = Card.objects.get(pk=blog_id)
     if updateCard.author == cardAuthor:
         updateCard.name = cardName
         updateCard.status = cardStatus
@@ -43,14 +43,14 @@ def updateRequest(request):
         return response.Response({'error': 'Not an authorized author'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['DELETE'])
-def deleteRequest(request):
+def deleteRequest(request, blog_id):
     requestContent = json.loads(request.body)
     try:
         cardName = requestContent['name']
         cardAuthor = requestContent['author']
     except KeyError:
         return response.Response({'error': 'Invalid JSON input'}, status=status.HTTP_400_BAD_REQUEST)
-    deleteCard = Card.objects.get(name=cardName)
+    deleteCard = Card.objects.get(pk=blog_id)
     if deleteCard.author == cardAuthor:
         deleteCard.delete()
         return response.Response(data='Delete card successful', status=status.HTTP_200_OK)
